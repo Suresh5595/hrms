@@ -1,0 +1,9 @@
+[14-Sep-2021 11:43:18 Asia/Kolkata] PHP Fatal error:  Call to undefined method Login::check_customer_login() in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/controllers/api/customer/Customer.php on line 291
+[14-Sep-2021 11:44:52 Asia/Kolkata] PHP Fatal error:  Call to undefined method Login::check_customer_login() in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/controllers/api/customer/Customer.php on line 291
+[16-Sep-2021 18:40:47 Asia/Kolkata] PHP Parse error:  syntax error, unexpected '}' in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/controllers/api/customer/Customer.php on line 790
+[16-Sep-2021 18:40:51 Asia/Kolkata] PHP Parse error:  syntax error, unexpected '}' in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/controllers/api/customer/Customer.php on line 790
+[17-Sep-2021 18:03:45 Asia/Kolkata] PHP Fatal error:  Call to a member function last_query() on null in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/libraries/Login.php on line 88
+[17-Sep-2021 18:03:48 Asia/Kolkata] PHP Fatal error:  Call to a member function last_query() on null in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/libraries/Login.php on line 88
+[17-Sep-2021 18:03:54 Asia/Kolkata] PHP Fatal error:  Call to a member function last_query() on null in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/libraries/Login.php on line 88
+[17-Sep-2021 18:05:00 Asia/Kolkata] PHP Fatal error:  Call to a member function last_query() on null in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/libraries/Login.php on line 88
+[23-Sep-2021 07:38:16 Asia/Kolkata] PHP Fatal error:  Call to a member function insertByid() on null in /home3/mobicsol/public_html/edubrainy.in/sale_wizard/api/application/libraries/Login.php on line 127
