@@ -51,7 +51,7 @@ class Login {
             return array('status' => 400,'message' => 'User not found.');
         } else {
             $hashed_password = $q->pwd;
-            $id              = $q->id;
+            $id              = $q->biometricAccess;
             if ($hashed_password == $params['password']) {
               if($q->is_login_portal == 0){
                 return array('status' => 400,'message' => 'User Account is denied');
@@ -68,7 +68,7 @@ class Login {
                 } else {
                 $this->ci->db->trans_commit();
                 $log_data = array(
-                	"staff_id_fk" => $id,
+                	"staff_id_fk" => $q->biometricAccess,
                 	"type" =>$params['type'],
                 	"device_id" => $params['device_id'],
                 	"device_name" => $params['device_name'],
@@ -77,18 +77,18 @@ class Login {
                 	"os_name" => $params['os_name'],
                 	"date_added" => date('Y-m-d H:i:s')
                 );
-                $this->ci->db->insert('hrms_staff_logs',$log_data);
+                $this->ci->db->insert('hrms_staff_logs',$log_data);                
                 return array(
                 'status' => 200,
                 'message' => 'Successfully login.',
                 'data' => array(
-	                'id' => $id, 
+	                'id' => $q->id, 
 	                'emp_code' => $q->biometricAccess,
-                    'profile_image' => site_url().$q->profileimage,
+                    'profile_image' => "http://".$_SERVER['HTTP_HOST'].'/hrms_new/'.$q->profileimage,
 	                'designation_id' => $q->designation_id,
-                    'company_id' => $q->company_id,
                     'user_type_name' =>  get_val('usertypename','id',$q->user_type_id_fk,'hrms_user_type'),
                     'branch_id' => $q->branch_id,
+                    'branch_name' => get_val('name','id',$q->branch_id,'hrms_branch'),
                     'user_type_id_fk' => $q->user_type_id_fk,
                     'designation_name' => get_val('name','id',$q->designation_id,'hrms_designation'),
 	                'name' => $q->name, 

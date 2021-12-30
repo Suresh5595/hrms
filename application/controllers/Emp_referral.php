@@ -63,7 +63,7 @@ class Emp_referral extends CI_Controller
 		        					$data[] = array(
 		        						"referral_id" => $val->referral_id,
 		        						"staff_id_fk" => $val->staff_id_fk,
-										"biometricAccess" => get_val('biometricAccess','id',$val->staff_id_fk,'hrms_staffmaster'),
+										"biometricAccess" => $val->biometricAccess,
 		        						"employee" => get_val('name','id',$val->staff_id_fk,'hrms_staffmaster'),
 		        						"company_id" => get_val('company_id','id',$val->staff_id_fk,'hrms_staffmaster'),
 		        						"company_name" => get_val('name','id',get_val('company_id','id',$val->staff_id_fk,'hrms_staffmaster'),'hrms_company'),

@@ -652,7 +652,7 @@ $config['cache_query_string'] = FALSE;
 
 */
 
-$config['encryption_key'] = 'HsErUs';
+$config['encryption_key'] = '';
 
 
 

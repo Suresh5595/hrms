@@ -498,22 +498,23 @@ class Api extends CI_Controller
     {
         $json_input = file_get_contents('php://input'); // JSON Input
         $data = json_decode($json_input, true);
-        /*$check_auth_user = $this->login->check_auth_user();
+        $check_auth_user = $this->login->check_auth_user();
         if($check_auth_user == true){
+            
         	$response = $this->login->auth();
-        	if($response['status'] == 200){*/
-		        $result = $this->Api_model->get_branch();
-		        if ($result) {
-		            $output = array('status' => 'success', 'message' => 'Branch List', 'data' => $result);
-		            echo json_encode($output);
-		        } else {
-		            $output = array('status' => 'error', 'message' => 'No data found');
-		            echo json_encode($output);
-		        }
-    		/*}else{
+        	if($response['status'] == 200){
+        $result = $this->Api_model->get_branch();
+        if ($result) {
+            $output = array('status' => 'success', 'message' => 'Branch List', 'data' => $result);
+            echo json_encode($output);
+        } else {
+            $output = array('status' => 'error', 'message' => 'No data found');
+            echo json_encode($output);
+        }
+    }else{
         	   echo json_encode($response); 
         	}
-        }*/
+        }
     }
 
     public function department()
@@ -636,20 +637,21 @@ class Api extends CI_Controller
         $json_input = file_get_contents('php://input'); // JSON Input
         $data = json_decode($json_input, true);
         $check_auth_user = $this->login->check_auth_user();
-        if($check_auth_user == true){            
+        if($check_auth_user == true){
+            
         	$response = $this->login->auth();
         	if($response['status'] == 200){
-		        $result = $this->Api_model->get_job_opening(array());
-		        if ($result) {
-		            $output = array('status' => 'success', 'message' => 'job opening List', 'data' => $result);
-		            echo json_encode($output);
-		        } else {
-		            $output = array('status' => 'error', 'message' => 'No data found');
-		            echo json_encode($output);
-		        }
-	    	}else{
-	        	   echo json_encode($response); 
-	        }
+        $result = $this->Api_model->get_job_opening(array());
+        if ($result) {
+            $output = array('status' => 'success', 'message' => 'job opening List', 'data' => $result);
+            echo json_encode($output);
+        } else {
+            $output = array('status' => 'error', 'message' => 'No data found');
+            echo json_encode($output);
+        }
+    }else{
+        	   echo json_encode($response); 
+        	}
         }
     }
 
@@ -1170,8 +1172,7 @@ class Api extends CI_Controller
         	if($response['status'] == 200){
         if(isset($data['enc_id']) && $data['enc_id'] !=''){
             $id = $data['enc_id'];
-            //$data['id'] = $this->encrypt->decode($id);
-            $data['id'] = urldecode(base64_decode($id));
+            $data['id'] = $this->encrypt->decode($id);
         }        
         if ($data['id']) {
             $result = $this->Api_model->get_staffmaster_id($data['id']);
@@ -1251,11 +1252,11 @@ class Api extends CI_Controller
     {
         $json_input = file_get_contents('php://input'); // JSON Input
         $data = json_decode($json_input, true);
-        /*$check_auth_user = $this->login->check_auth_user();
+        $check_auth_user = $this->login->check_auth_user();
         if($check_auth_user == true){
             
         	$response = $this->login->auth();
-        	if($response['status'] == 200){*/
+        	if($response['status'] == 200){
         if ($data) {
             $result = $this->Api_model->get_job_opening($data);
             if ($result) {
@@ -1269,10 +1270,10 @@ class Api extends CI_Controller
             $output = array('status' => 'error', 'message' => 'Enter Staff Id');
             echo json_encode($output);
         }
-    /*}else{
+    }else{
         	   echo json_encode($response); 
         	}
-        }*/
+        }
     }
 
     public function get_job_ques()
@@ -1732,7 +1733,7 @@ class Api extends CI_Controller
                     }
                 }
                 if ($Branch['name']) {
-                    $check_duplicate = $this->Api_model->check_branch_duplicate('hrms_branch', 'name', $Branch['name'], 'company_id',$Branch['company_id']);
+                    $check_duplicate = $this->Api_model->check_duplicate('hrms_branch', 'name', $Branch['name']);
                     //    echo $this->db->last_query();die;
                     if ($check_duplicate) {
                         $output = array('status' => 'error', 'message' => 'Name Already Exists');
@@ -1770,7 +1771,7 @@ class Api extends CI_Controller
         if (isset($Branch['id']) && $Branch['id'] != '' && isset($Branch['name']) && isset($Branch['code']) && isset($Branch['company_id']) && isset($Branch['status']) && $Branch['name'] != '' && $Branch['code'] != '' && $Branch['company_id'] != '' && $Branch['status'] != '') {
             $id = $Branch['id'];
             if ($Branch['code']) {
-                $check_duplicate = $this->Api_model->check_branch_duplicate('hrms_branch', 'code', $Branch['code'], 'company_id',$Branch['company_id'], $Branch['id']);
+                $check_duplicate = $this->Api_model->check_duplicate('hrms_branch', 'code', $Branch['code'], $Branch['id']);
                 //    echo $this->db->last_query();die;
                 if ($check_duplicate) {
                     $output = array('status' => 'error', 'message' => 'Code Already Exists');
@@ -1780,7 +1781,8 @@ class Api extends CI_Controller
             }
 
             if ($Branch['name']) {
-                $check_duplicate = $this->Api_model->check_branch_duplicate('hrms_branch', 'name', $Branch['name'], 'company_id',$Branch['company_id'],$Branch['id']);
+                $check_duplicate = $this->Api_model->check_duplicate('hrms_branch', 'name', $Branch['name'], $Branch['id']);
+                //    echo $this->db->last_query();die;
                 if ($check_duplicate) {
                     $output = array('status' => 'error', 'message' => 'Name Already Exists');
                     echo json_encode($output);
@@ -2819,11 +2821,11 @@ class Api extends CI_Controller
         $json_input = file_get_contents('php://input'); // JSON Input
         
         $application = json_decode($json_input, true);
-        /*$check_auth_user = $this->login->check_auth_user();
+        $check_auth_user = $this->login->check_auth_user();
         if($check_auth_user == true){
             
         	$response = $this->login->auth();
-        	if($response['status'] == 200){*/
+        	if($response['status'] == 200){
         if (isset($application['first_name']) && $application['first_name'] != '' && isset($application['last_name']) && $application['last_name'] != '' && isset($application['email']) && $application['email'] != '' && isset($application['whatsapp_no']) && $application['whatsapp_no'] != '' && isset($application['dob']) && $application['dob'] != '' && isset($application['gender']) && $application['gender'] != '' && isset($application['marital_status']) && $application['marital_status'] != '' && isset($application['residence_address']) && $application['residence_address'] != '' && isset($application['permanent_address']) && $application['permanent_address'] != '' && isset($application['expected_date_join']) && $application['expected_date_join'] != '' && isset($application['relocate_willing']) && $application['relocate_willing'] != '' && isset($application['language_speak']) && $application['language_speak'] != '' && isset($application['language_write']) && $application['language_write'] != '' && isset($application['job_status']) && $application['job_status'] != '' && isset($application['company_id']) && $application['company_id'] != '' && isset($application['job_opening_id']) && $application['job_opening_id'] != '' && isset($application['resume']) && $application['resume'] != '' && isset($application['source']) && $application['source'] != ''){
                 $application['expected_date_join'] = date('Y-m-d',strtotime($application['expected_date_join']));
                 $application['dob'] = date('Y-m-d',strtotime($application['dob']));
@@ -2855,10 +2857,10 @@ class Api extends CI_Controller
             $output = array('status' => 'error', 'message' => 'Enter Mandetory Fields');
             echo json_encode($output);
         }
-        	/*}else{
+        	}else{
         	   echo json_encode($response); 
         	}
-        }*/
+        }
     }
 
     public function update_application()
@@ -3109,23 +3111,22 @@ $check_auth_user = $this->login->check_auth_user();
                 // die;
                 // echo $staff_id;
                 if($staff_id){
-                    $enc_id = urlencode(base64_encode($staffmaster_id));
-                    //$enc_id = $this->encrypt->encode($staffmaster_id);
-                    $url = 'https://fifthangle.oneshoot.online/hrms/#/onboarding';
+                    /*$enc_id = $this->encrypt->encode($staff_id);
+                    $url = 'https://hrm.zerogravitygroups.com/#/onboarding';
                     $vendor_update['onboard_link'] = $link = $url."/?id=".$enc_id."";
-                    $this->db->where('id',$staffmaster_id);
+                    $this->db->where('id',$staff_id);
                     $this->db->update('hrms_staffmaster',$vendor_update);
                     $this->email->set_mailtype("html");
-                    $this->email->from('info@fifthanglestudios.com', 'fifthanglestudios'); 
-                    $this->email->to($final_data[$key]['mail_id']);
+                    $this->email->from('zg@gmail.com', 'ZG'); 
+                    $this->email->to($staffmaster['mail_id']);
                     $this->email->subject('Welcome'); 
-                    $html = "Dear ". $final_data[$key]['name']."<br>";
+                    $html = "Dear ". $staffmaster['name']."<br>";
                     $html .= "Your Onboard Link <a href='".$link."'>click Here</a><br>";
-                    $html .= "Thanks From fifthanglestudios";
+                    $html .= "Thanks From ZG";
                     $this->email->message($html); 
 
-                    // //Send mail 
-                    //$this->email->send(); 
+                    //Send mail 
+                    $this->email->send();*/
                     // refrence data
                     $m=0;
                     if($reference_data){
@@ -4067,11 +4068,11 @@ $check_auth_user = $this->login->check_auth_user();
 
     public function file_upload(){
         $input = $this->input->post();
-        /*$check_auth_user = $this->login->check_auth_user();
+        $check_auth_user = $this->login->check_auth_user();
         if($check_auth_user == true){
             
         	$response = $this->login->auth();
-        	if($response['status'] == 200){*/
+        	if($response['status'] == 200){
         if (isset($_FILES['filename']) && $_FILES['filename'] != ''){
             if(!is_dir('./assets/uploads/')){
                 mkdir('./assets/uploads/', 0777, true); 
@@ -4108,10 +4109,10 @@ $check_auth_user = $this->login->check_auth_user();
             $output = array('status' => 'error', 'message' => 'Enter Mandetory Fields');
             echo json_encode($output);
         }
-        	/*}else{
+        	}else{
         	   echo json_encode($response); 
         	}
-        }*/
+        }
     }
 
     public function result(){
@@ -5648,11 +5649,12 @@ $check_auth_user = $this->login->check_auth_user();
         $duplicate_list     = [];
         
         // Upload Function ## Parameter $folder_name
-        $config['upload_path']          = './uploads/staffmasters/';
+        $config['upload_path']          = './attachments/staffmasters/';
         $config['allowed_types']        = 'xlsx|xls|pdf|docx';
         $config['max_size']             = 10000; 
 
         $this->load->library('upload', $config);
+
         if ( ! $this->upload->do_upload('upload_files'))
         {
                     $error = array('error' => $this->upload->display_errors());
@@ -5667,7 +5669,7 @@ $check_auth_user = $this->login->check_auth_user();
                 $file = $file_name;
         }
         // File Path
-        $inputFileName = FCPATH . "uploads/staffmasters/".$file;
+        $inputFileName = FCPATH . "attachments/staffmasters/".$file;
         
         
         // Process
@@ -5753,6 +5755,7 @@ $check_auth_user = $this->login->check_auth_user();
             'alarm_count'                             => 'alarm_count',
             'status'                     => 'status'        
         );
+        
         $SheetDataKey = array();
         foreach ($allDataInSheet as $dataInSheet) {
             foreach ($dataInSheet as $key => $value) {
@@ -5859,9 +5862,9 @@ $check_auth_user = $this->login->check_auth_user();
                     $fetchData[$i]['jobstatus']     = ($Data[$i]['status'])?$Data[$i]['status']:1;
                     $fetchData[$i]['pwd'] = '12345';
                     $fetchData[$i]['biometricAccess'] = $Data[$i]['emp_code'];
-                    /*echo "<pre>";
-                    print_r($fetchData[$i]);
-                    die;*/
+                    // echo "<pre>";
+                    // print_r($fetchData[$i]);
+                    // die;
                     // echo $i;
                     if($fetchData[$i]['company_id'] && $fetchData[$i]['branch_id'] && $fetchData[$i]['name'] && $fetchData[$i]['emp_code']){
                         $final_data[]=$fetchData[$i];
@@ -5870,8 +5873,7 @@ $check_auth_user = $this->login->check_auth_user();
                     }     
                 }   
             } 
-            //echo count($final_data).'=='.($arrayCount-1); die();
-            if(count($final_data)){
+            if(count($final_data) == ($arrayCount-1)){
                 $this->load->library('email');
                 foreach($final_data as $key =>$val){
                     $final_data[$key]['onboard_status'] = 0;
@@ -5884,25 +5886,24 @@ $check_auth_user = $this->login->check_auth_user();
                     // echo $this->db->last_query();
                     // die;
                     $staffmaster_id = $this->db->insert_id();
-                    $enc_id = urlencode(base64_encode($staffmaster_id));
-                    //$enc_id = $this->encrypt->encode($staffmaster_id);
-                    $url = 'https://fifthangle.oneshoot.online/hrms/#/onboarding';
+                    $enc_id = $this->encrypt->encode($staffmaster_id);
+                    $url = 'https://hrm.zerogravitygroups.com/#/onboarding';
                     $vendor_update['onboard_link'] = $link = $url."/?id=".$enc_id."";
                     $this->db->where('id',$staffmaster_id);
                     $this->db->update('hrms_staffmaster',$vendor_update);
-                    $this->email->set_mailtype("html");
-                    $this->email->from('info@fifthanglestudios.com', 'fifthanglestudios'); 
-                    $this->email->to($final_data[$key]['mail_id']);
-                    $this->email->subject('Welcome'); 
-                    $html = "Dear ". $final_data[$key]['name']."<br>";
-                    $html .= "Your Onboard Link <a href='".$link."'>click Here</a><br>";
-                    $html .= "Thanks From fifthanglestudios";
-                    $this->email->message($html); 
+                    // $this->email->set_mailtype("html");
+                    // $this->email->from('zg@gmail.com', 'ZG'); 
+                    // $this->email->to($final_data[$key]['mail_id']);
+                    // $this->email->subject('Welcome'); 
+                    // $html = "Dear ". $final_data[$key]['name']."<br>";
+                    // $html .= "Your Onboard Link <a href='".$link."'>click Here</a><br>";
+                    // $html .= "Thanks From ZG";
+                    // $this->email->message($html); 
 
                     // //Send mail 
-                    //$this->email->send(); 
+                    // $this->email->send(); 
                 }
-                $this->db->insert_batch('hrms_staffmaster', $final_data); 
+                // $this->db->insert_batch('hrms_staffmaster', $final_data); 
                 $output = array('status' => 'success', 'message' => 'Staff Added Succesfully',"Not added data"=>$not_add);
                 echo json_encode($output);
             }else{

@@ -1205,12 +1205,12 @@
 
         public function get_designation($id = null){
 
-            $this->db->select('hrms_designation.*,hrms_department.name as department_name,hrms_company.id as company_id,hrms_company.name as company_name');
+            $this->db->select('hrms_designation.*,hrms_department.name as department_name');
 
             $this->db->from('hrms_designation');
 
             $this->db->join('hrms_department','hrms_department.id=hrms_designation.departmentid');
-            $this->db->join('hrms_company','hrms_company.id = hrms_department.company_id');
+
             $this->db->where('hrms_designation.status!=','3');
 
             if($id){
@@ -1639,23 +1639,27 @@
 
                     }
 
-                    $this->db->select('hrms_staffmaster.user_type_id_fk,hrms_user_type.usertypename');
+                    $this->db->select('hrms_users.usertype_id,hrms_user_type.usertypename');
 
-                    $this->db->from('hrms_staffmaster');
+                    $this->db->from('hrms_users');
 
-                    $this->db->join('hrms_user_type','hrms_user_type.id=hrms_staffmaster.user_type_id_fk');
+                    $this->db->join('hrms_user_type','hrms_user_type.id=hrms_users.usertype_id');
 
-                    $this->db->where('hrms_staffmaster.id',$val['id']);
+                    $this->db->where('hrms_users.emp_id',$val['id']);
 
-                    $this->db->where('hrms_staffmaster.status',1);
+                    $this->db->where('hrms_users.status',1);
 
                     $user = $this->db->get()->result_array();
 
                     if($user){
 
+                        $result[$key]['usertype_id'] = $user[0]['usertype_id'];
+
                         $result[$key]['usertypename'] = $user[0]['usertypename'];
 
                     }else{
+
+                        $result[$key]['usertype_id'] = '';
 
                         $result[$key]['usertypename'] = '';
 
@@ -2489,35 +2493,6 @@
             $this->db->from($table);
 
             $this->db->where($field,$value);
-
-            if($id){
-
-                $this->db->where('id!=',$id);
-
-            }
-
-            $query = $this->db->get();
-
-            if ($query->num_rows() > 0) { 
-
-                return $query->result_array();
-
-            }
-
-            return NULL;
-
-
-
-        }
-
-        public function check_branch_duplicate($table,$field,$value,$field1,$value1,$id = null){
-
-            $this->db->select('id');
-
-            $this->db->from($table);
-
-            $this->db->where($field,$value);
-            $this->db->where($field1,$value1);
 
             if($id){
 

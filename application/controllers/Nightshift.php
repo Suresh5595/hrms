@@ -209,7 +209,112 @@ class Nightshift  extends CI_Controller
 		}
 	}
 
- public function getMobileNightshiftList(){
+    public function getMobileNightshiftList(){				
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'POST'){
+			json_output(400,array('status' => 400,'message' => 'Bad request.'));
+		}else{						
+			$check_auth_user = $this->login->check_auth_user();
+			if($check_auth_user == true){								
+	        	$response = $this->login->auth();
+	        	if($response['status'] == 200){								
+					$params = json_decode(file_get_contents('php://input'), TRUE);
+					if($params['staff_id_fk'] == ""){
+						$respStatus = 400;
+						$resp = array('status' => 400,'message' =>  'Fields Missing');
+					}else{
+						$params['date_added'] = date('Y-m-d H:i:s');												
+		        		$result = $this->common1_model->getMobileNightshiftList($params);
+						$resp=array();		        		
+		        		if($result){
+							foreach($result as $res){                                										                                
+                    
+                            $status=current_status($res->fwd_4_status,$res->fwd_3_status,$res->fwd_2_status,$res->fwd_1_status,$res->fwd4,$res->fwd3,$res->fwd2,$res->fwd1);																														 
+
+								$resp[]=array("nightshift_id" => $res->nightshift_id,
+                                "name" => $res->name,
+								"emp_code" => $res->biometricAccess,
+								"profileimage" => $res->profileimage,								
+								"date" => $res->date,
+								"purpose" => $res->purpose,
+								"fromtime" => $res->fromtime,
+								"totime" => $res->totime,								
+                                "duration" => $res->duration,									
+								"current_status" => $status,
+								"main_status" => $res->main_status,
+                                "main_status_code" => main_status($res->main_status),
+                                "date_added" => $res->date_added);
+							}
+						}
+					}
+					json_output($response['status'],$resp);
+	        	}
+			}
+		}
+	}
+
+    public function getApproveNightshiftList(){		
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'POST'){
+			json_output(400,array('status' => 400,'message' => 'Bad request.'));
+		}else{						
+			$check_auth_user = $this->login->check_auth_user();
+			if($check_auth_user == true){								
+	        	$response = $this->login->auth();
+	        	if($response['status'] == 200){								
+					$params = json_decode(file_get_contents('php://input'), TRUE);
+					if($params['staff_id_fk'] == ""){
+						$respStatus = 400;
+						$resp = array('status' => 400,'message' =>  'Fields Missing');
+					}else{
+						$params['date_added'] = date('Y-m-d H:i:s');												
+		        		$result = $this->common1_model->getApproveNightshiftList($params);
+                        //print_r($result);
+						$resp=array();
+		        		if($result){
+							foreach($result as $res){								
+                                $status=current_status($res->fwd_4_status,$res->fwd_3_status,$res->fwd_2_status,$res->fwd_1_status,$res->fwd4,$res->fwd3,$res->fwd2,$res->fwd1);		
+                                // 
+								$resp[]=array("nightshift_id" => $res->nightshift_id, 
+								"staff_id_fk" => $res->staff_id_fk, 
+								"company_id" => get_val('name','id',$res->company_id,'hrms_company'),
+								"branch_id" => get_val('name','id',$res->branch_id,'hrms_branch'),
+								"emp_code" => $res->biometricAccess,
+								"name" => $res->name,								
+								"profileimage" => $res->profileimage, 								
+								"biometricAccess" => $res->biometricAccess,								
+								"fwd1" => $res->fwd1, 
+								"fwd2" => $res->fwd2, 
+								"fwd3" => $res->fwd3, 
+								"fwd4" => $res->fwd4,								
+								"date" => $res->date,
+								"purpose" => $res->purpose,
+								"fromtime" => $res->fromtime,
+								"totime" => $res->totime,			
+                                "duration" => $res->duration,							
+                                "notification" => $res->notification,						
+								"fwd_1_status" => $res->fwd_1_status, 
+								"fwd_1_approval_date" => $res->fwd_1_approval_date, 
+								"fwd_2_status" => $res->fwd_2_status, 
+								"fwd_2_approval_date" => $res->fwd_2_approval_date, 
+								"fwd_3_status" => $res->fwd_3_status, 
+								"fwd_3_approval_date" => $res->fwd_3_approval_date, 
+								"fwd_4_status" => $res->fwd_4_status, 
+								"fwd_4_approval_date" => $res->fwd_4_approval_date, 
+                                "current_status" => $status,
+								"main_status" => $res->main_status,
+                                "main_status_code" => main_status($res->main_status),
+								"date_added" => $res->date_added);
+							}
+						}
+					}
+					json_output($response['status'],$resp);
+	        	}
+			}
+		}
+	}
+
+    public function NightshiftStatusUpdate(){
 		$method = $_SERVER['REQUEST_METHOD'];
 		if($method != 'POST'){
 			json_output(400,array('status' => 400,'message' => 'Bad request.'));
@@ -217,49 +322,51 @@ class Nightshift  extends CI_Controller
 			$check_auth_user = $this->login->check_auth_user();
 			if($check_auth_user == true){
 	        	$response = $this->login->auth();
+	        	$respStatus = $response['status'];
 	        	if($response['status'] == 200){
-					$params = json_decode(file_get_contents('php://input'), TRUE);
-					if ($params['staff_id_fk'] == ""){
+                    $params = json_decode(file_get_contents('php://input'), TRUE);
+                    $user_id = $this->input->get_request_header('User-ID', TRUE);
+					if ($params['nightshift_id'] == "") {
 						$respStatus = 400;
 						$resp = array('status' => 400,'message' =>  'Fields Missing');
-					}else{
-						$params['date_added'] = date('Y-m-d H:i:s');					
-		        		$resp = $this->common1_model->getMobileNightshiftList($params);		        	
-						$data=array();
-		        		if($resp){
-							foreach($resp as $res){
-								$designation_name='';
-								if($res->fwd_1_status==0){									
-									$designation_name='Pending';
-								}
-								else if($res->fwd_1_status==1 && $res->fwd_2_status==0){																			
-									$designation_name=get_val('name','id',get_val('designation_id','id',$res->fwd1,'hrms_staffmaster'),'hrms_designation');
-								}
-								else if($res->fwd_1_status==1 && $res->fwd_2_status==1 && $res->fwd_3_status==0){									
-									$designation_name=get_val('name','id',get_val('designation_id','id',$res->fwd2,'hrms_staffmaster'),'hrms_designation');
-								}
-								else if($res->fwd_1_status==1 && $res->fwd_2_status==1 && $res->fwd_3_status==1 && $res->fwd_4_status==0){									
-									$designation_name=get_val('name','id',get_val('designation_id','id',$res->fwd3,'hrms_staffmaster'),'hrms_designation');
-								}
-								else if($res->fwd_1_status==1 && $res->fwd_2_status==1 && $res->fwd_3_status==1 && $res->fwd_4_status==1){								
-									$designation_name=get_val('name','id',get_val('designation_id','id',$res->fwd4,'hrms_staffmaster'),'hrms_designation');
-								}
-								$data[]=array('emp_id'=>$res->emp_id,
-								"name" => $res->name,
-								"emp_code" => $res->biometricAccess,
-								"profileimage" => $res->profileimage,								
-								"date" => $res->date,
-								"purpose" => $res->purpose,
-								"fromtime" => $res->fromtime,
-								"totime" => $res->totime,
-								"nightshift_id" => $res->nightshift_id,
-								"current_status" => $designation_name,
-								"main_status" => $res->main_status);
+					} else {
+						$nightshift_id = $params['nightshift_id'];
+						unset($params['nightshift_id']);
+					    $getStaffdetail = $this->queries->query('hrms_staffmaster',array('biometricAccess'=>get_val('staff_id_fk','nightshift_id',$nightshift_id,'hrms_nightshift')),'row');
+						if($getStaffdetail)
+                        {
+							if($params['main_status']==3){ $status=3; }else{ $status=1; }
+							if($getStaffdetail->fwd1 == $user_id){
+								$data['fwd_1_status'] = $status;
+								$data['fwd_1_approval_date'] = date('Y-m-d H:i:s');
+								if(empty($getStaffdetail->fwd2)){ $data['main_status'] = $status; }
 							}
-						}
+							if($getStaffdetail->fwd2 == $user_id){
+								$data['fwd_2_status'] = $status;
+								$data['fwd_2_approval_date'] = date('Y-m-d H:i:s');
+								if(empty($getStaffdetail->fwd3)){ $data['main_status'] = $status; }
+							}
+							if($getStaffdetail->fwd3 == $user_id){
+								$data['fwd_3_status'] = $status;
+								$data['fwd_3_approval_date'] = date('Y-m-d H:i:s');
+								if(empty($getStaffdetail->fwd4)){ $data['main_status'] = $status; }
+							}
+							if($getStaffdetail->fwd4 == $user_id){
+								$data['fwd_4_status'] = $status;
+								$data['fwd_4_approval_date'] = date('Y-m-d H:i:s');			
+								$data['main_status'] = $status;																					
+							}												
+                            if($params['main_status']==3){ $data['main_status'] = 3; }
+
+							$resp = $this->queries->update('nightshift_id',$nightshift_id,'hrms_nightshift',$data);
+						}                        
+                        else
+                        {
+		        			$resp = array('status' => 400,'message' =>  'Status Updated Faild');
+		        		}
 					}
-					json_output($response['status'],$data);
-	        	}
+					json_output($respStatus,$resp);
+		        }
 			}
 		}
 	}

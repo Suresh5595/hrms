@@ -51,4 +51,23 @@
                 return '';
             }
         }
+
+        public function query($qry)
+        {
+            $query = $this->db->query($qry);            
+            if($query->num_rows()>0)
+            {
+                return $query->result_array();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public function update($arr,$table,$value)
+        {
+            $this->db->where($arr);
+            $this->db->update($table, $value); 
+        }
     }
